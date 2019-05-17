@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from reptyle import command, context
+from reptyle import command, context, exception
 import unittest
 
 class TestStringMethods(unittest.TestCase):
@@ -21,8 +21,34 @@ class TestStringMethods(unittest.TestCase):
             test.has_been_called = True
 
         self.assertTrue("test" in context.commands())
-        context.exec("test", [])
-        self.assertTrue(test.has_been_called, "Command handler was not properly called")
+        context.exec("test")
+        self.assertTrue(hasattr(test, "has_been_called"))
+
+    def test_unknown_command(self):
+        exception_raised = False
+        try:
+            context.exec("unknown")
+        except exception.ParserException:
+            exception_raised = True
+
+        self.assertTrue(exception_raised)
+
+    def test_parent_command(self):
+        @command
+        def foo():
+            foo.has_been_called = True
+
+        @command(parent = foo)
+        def bar():
+            bar.has_been_called = True
+
+        self.assertTrue("foo" in context.commands())
+        self.assertFalse("bar" in context.commands())
+
+        context.exec("foo bar")
+        self.assertFalse(hasattr(foo, "has_been_called"))
+        self.assertTrue(hasattr(bar, "has_been_called"))
+
 
 if __name__ == '__main__':
     unittest.main()

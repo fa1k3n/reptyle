@@ -44,7 +44,7 @@ class Console:
         self.running = True
         while self.running:
             text = prompt('> ', completer=cmd_completer).split(" ")
-            cmd = context.exec(text[0], text[1:])
+            cmd = context.exec(text)
             for word in text[1:]:
                 if len(cmd.childs) is 0:
                     break

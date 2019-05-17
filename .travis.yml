@@ -4,8 +4,5 @@ language: python
 install:
   - pip install -r requirements.txt
   - python setup.py install
-#before_script:
-#  - export PYTHONPATH=$PYTHONPATH:$(pwd)
-# command to run tests
 script:
   - pytest
