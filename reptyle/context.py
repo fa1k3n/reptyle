@@ -5,7 +5,8 @@ _commands = {}
 def __exec_subcmd(cmd_list, cmds):
     try:
         cmd = cmd_list[cmds[0]]
-        if len(cmd.childs) == 0:
+        # Last command in list or leaf command
+        if len(cmds) == 1 or len(cmd.childs) == 0:
             return cmd()
         else:
             return __exec_subcmd(cmd.childs, cmds[1:])

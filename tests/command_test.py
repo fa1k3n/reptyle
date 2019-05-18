@@ -45,10 +45,14 @@ class TestStringMethods(unittest.TestCase):
         self.assertTrue("foo" in context.commands())
         self.assertFalse("bar" in context.commands())
 
+        # Make sure only bar has been called
         context.exec("foo bar")
         self.assertFalse(hasattr(foo, "has_been_called"))
         self.assertTrue(hasattr(bar, "has_been_called"))
 
+        # And that it still is possible to call foo
+        context.exec("foo")
+        self.assertTrue(hasattr(foo, "has_been_called"))
 
 if __name__ == '__main__':
     unittest.main()
