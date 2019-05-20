@@ -6,6 +6,6 @@ install:
   - pip install codecov nose
   - python setup.py install
 script:
-  - nosetest --with-coverage --cover-package=reptyle
+  - nosetests --with-coverage --cover-package=reptyle
 after_success:
   - codecov -t 7630d04d-c20d-4532-bac6-abbedb48596c
