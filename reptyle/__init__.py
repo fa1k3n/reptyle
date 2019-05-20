@@ -2,15 +2,18 @@ from reptyle.console import Console, running
 import reptyle.context as context
 from functools import partial
 
+def __add_cmd(parent, name, fun):
+    if not hasattr(fun, "childs"):
+        fun.childs = {}
+    parent.childs[name] = fun
+
 def command(parent=None):
     if not isinstance(parent, partial):
         # Top level command
-        fun = parent
-        fun.childs = {}
-        context._commands[fun.__name__] = fun
+        context.root()
+        __add_cmd(context.root, parent.__name__, parent)
 
     def decorator(fun, parent=None):
-        fun.childs = {}
-        context._commands[parent.keywords["parent"].__name__].childs[fun.__name__] = fun
+        __add_cmd(parent.keywords["parent"], fun.__name__, fun)
         return fun
     return partial(decorator, parent=parent)

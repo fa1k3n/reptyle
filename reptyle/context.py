@@ -1,6 +1,10 @@
 from reptyle.exception import ParserException
 
-_commands = {}
+
+
+def root():
+    if not hasattr(root, "childs"):
+        root.childs = {}
 
 def __exec_subcmd(cmd_list, cmds):
     try:
@@ -15,8 +19,7 @@ def __exec_subcmd(cmd_list, cmds):
 
 def exec(cmds):
     cmds = cmds.split(" ")
-    return __exec_subcmd(_commands, cmds)
+    return __exec_subcmd(root.childs, cmds)
 
-
-def commands(parent = None):
-    return _commands.keys()
+def commands(parent = root):
+    return parent.childs.keys()

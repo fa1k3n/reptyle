@@ -54,5 +54,13 @@ class TestStringMethods(unittest.TestCase):
         context.exec("foo")
         self.assertTrue(hasattr(foo, "has_been_called"))
 
+    #def test_commands_can_be_called_as_functions(self):
+    #    @command
+    #    def foo():
+    #        foo.has_been_called = True
+
+     #   foo()
+     #   self.assertTrue(hasattr(foo, "has_been_called"))
+
 if __name__ == '__main__':
     unittest.main()
