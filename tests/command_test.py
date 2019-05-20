@@ -14,7 +14,14 @@
 from reptyle import command, context, exception
 import unittest
 
+
 class TestStringMethods(unittest.TestCase):
+
+    def setUp(self):
+        # Destroy old root
+        if hasattr(context.root, "childs"):
+            delattr(context.root, "childs")
+
     def test_creation(self):
         @command
         def test():
@@ -47,6 +54,7 @@ class TestStringMethods(unittest.TestCase):
 
         # Make sure only bar has been called
         context.exec("foo bar")
+
         self.assertFalse(hasattr(foo, "has_been_called"))
         self.assertTrue(hasattr(bar, "has_been_called"))
 
@@ -54,13 +62,44 @@ class TestStringMethods(unittest.TestCase):
         context.exec("foo")
         self.assertTrue(hasattr(foo, "has_been_called"))
 
-    #def test_commands_can_be_called_as_functions(self):
-    #    @command
-    #    def foo():
-    #        foo.has_been_called = True
+    def test_commands_can_be_called_as_functions(self):
+        @command
+        def foo():
+            foo.has_been_called = True
 
-     #   foo()
-     #   self.assertTrue(hasattr(foo, "has_been_called"))
+        @command
+        def bar(parent = foo):
+            bar.has_been_called = True
+
+        foo()
+        bar()
+        self.assertTrue(hasattr(foo, "has_been_called"))
+        self.assertTrue(hasattr(bar, "has_been_called"))
+
+    def test_context_dump_tree(self):
+        @command
+        def foo():
+            pass
+
+        @command(parent = foo)
+        def bar():
+            pass
+
+        @command(parent=foo)
+        def baz():
+            pass
+
+        @command()
+        def bar():
+            pass
+
+        expected_tree = """foo
+  bar
+  baz
+bar
+"""
+        dump = context.dump_tree()
+        self.assertEqual(expected_tree, dump)
 
 if __name__ == '__main__':
     unittest.main()

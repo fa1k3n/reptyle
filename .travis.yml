@@ -3,6 +3,9 @@ language: python
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - pip install codecov
   - python setup.py install
 script:
-  - pytest
+  - nosetest --with-coverage --cover-package=reptyle
+after_success:
+  - codecov -t 7630d04d-c20d-4532-bac6-abbedb48596c
