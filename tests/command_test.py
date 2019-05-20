@@ -32,12 +32,23 @@ class TestStringMethods(unittest.TestCase):
         self.assertTrue(hasattr(test, "has_been_called"))
 
     def test_unknown_command(self):
+        
         exception_raised = False
         try:
             context.exec("unknown")
         except exception.ParserException:
             exception_raised = True
+        self.assertTrue(exception_raised)
 
+
+        exception_raised = False
+        @command
+        def test():
+            pass
+        try:
+            context.exec("testa")
+        except exception.ParserException:
+            exception_raised = True
         self.assertTrue(exception_raised)
 
     def test_parent_command(self):
