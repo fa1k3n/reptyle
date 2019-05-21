@@ -112,5 +112,62 @@ bar
         dump = context.dump_tree()
         self.assertEqual(expected_tree, dump)
 
+    def test_named_commands(self):
+        @command(name = "foo")
+        def bar():
+            bar.has_been_called = True
+
+        self.assertTrue("foo" in context.commands())
+        self.assertFalse("bar" in context.commands())
+
+        context.exec("foo")
+        self.assertTrue(hasattr(bar, "has_been_called"))
+
+    def test_named_parent(self):
+        @command(name = "baz")
+        def foo():
+            foo.has_been_called = True
+
+        @command(parent = foo)
+        def bar():
+            bar.has_been_called = True
+
+        context.exec("baz bar")
+        self.assertFalse(hasattr(foo, "has_been_called"))
+        self.assertTrue(hasattr(bar, "has_been_called"))
+
+    def test_multi_level_hierarchy(self):
+        @command
+        def foo():
+            foo.has_been_called = True
+
+        @command(parent=foo)
+        def bar():
+            bar.has_been_called = True
+
+        @command(parent=bar)
+        def baz():
+            baz.has_been_called = True
+
+        context.exec("foo bar baz")
+        self.assertFalse(hasattr(foo, "has_been_called"))
+        self.assertFalse(hasattr(bar, "has_been_called"))
+        self.assertTrue(hasattr(baz, "has_been_called"))
+
+    def test_registering_commands_with_same_name_should_yield_an_exception(self):
+        @command
+        def foo():
+            pass
+
+        has_raised_exception = False
+        try:
+            @command(name = "foo")
+            def bar():
+                pass
+        except exception.GeneralException as e:
+            has_raised_exception = True
+        self.assertTrue(has_raised_exception)
+
+
 if __name__ == '__main__':
     unittest.main()

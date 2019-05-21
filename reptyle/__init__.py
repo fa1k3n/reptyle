@@ -13,22 +13,27 @@
 
 from reptyle.console import Console, running
 import reptyle.context as context
+from reptyle.exception import GeneralException
 
 
 def __add_cmd(parent, name, fun):
     if not hasattr(fun, "childs"):
         fun.childs = {}
+    if name in parent.childs:
+        raise GeneralException(f"command {name} is already a registered command")
     parent.childs[name] = fun
 
 
-def command(_func = None, *, parent = context.root):
-    def wrapper(func, parent = parent):
-        __add_cmd(parent, func.__name__, func)
+def command(_func = None, *, parent = context.root, name = None):
+    context.root()
+
+    def wrapper(func, parent = parent, name = name):
+        if name is None:
+            name = func.__name__
+        __add_cmd(parent, name, func)
         return func
 
     if _func is None:
         return wrapper
     else:
-        # Top level cmd, init root element if needed
-        context.root()
-        return wrapper(_func, parent)
+        return wrapper(_func, parent, name)
