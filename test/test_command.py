@@ -15,7 +15,7 @@ from reptyle import command, context, exception
 import unittest
 
 
-class TestStringMethods(unittest.TestCase):
+class TestCommandMethods(unittest.TestCase):
 
     def setUp(self):
         # Destroy old root
@@ -78,8 +78,8 @@ class TestStringMethods(unittest.TestCase):
         def foo():
             foo.has_been_called = True
 
-        @command
-        def bar(parent = foo):
+        @command(parent = foo)
+        def bar():
             bar.has_been_called = True
 
         foo()
