@@ -15,6 +15,7 @@ from reptyle.console import Console, running
 import reptyle.context as context
 from reptyle.exception import GeneralException
 import inspect
+from collections import OrderedDict
 
 def __add_cmd(parent, name, fun):
     if not hasattr(fun, "childs"):
@@ -32,7 +33,7 @@ def command(_func = None, *, parent = context.root, name = None):
             name = func.__name__
         func_spec = inspect.getfullargspec(func)
 
-        if not hasattr(func, "args") and len(func_spec.args) > 0:
+        if not hasattr(func, "arguments") and len(func_spec.args) > 0:
             # Command function seem to have arguments, but none is defined
             raise exception.GeneralException(f"numbers of arguments does not match")
         __add_cmd(parent, name, func)
@@ -43,12 +44,14 @@ def command(_func = None, *, parent = context.root, name = None):
     else:
         return wrapper(_func, parent, name)
 
-def argument(name):
+def argument(name, description=None):
     def wrapper(func):
         func_spec = inspect.getfullargspec(func)
         args = func_spec.args
         if name not in args:
             raise exception.GeneralException(f"argument {name} does not exist in function {func.__name__}")
-        func.args = args
+        if not hasattr(func, "arguments"):
+            func.arguments = OrderedDict()
+        func.arguments[name] = {"description": description}
         return func
     return wrapper

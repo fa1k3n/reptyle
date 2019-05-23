@@ -31,7 +31,10 @@ def __exec_subcmd(cmd_list, cmds):
         cmd = cmd_list[cmds[0]]
         # Last command in list or leaf command
         if len(cmds) == 1 or len(cmd.childs) == 0:
-            return cmd(*cmds[1:])
+            try: 
+                return cmd(*cmds[1:])
+            except TypeError:
+                raise ParserException("too many arguments")
         else:
             return __exec_subcmd(cmd.childs, cmds[1:])
     except KeyError:

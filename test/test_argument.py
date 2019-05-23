@@ -49,3 +49,34 @@ class TestArgumentMethods(unittest.TestCase):
     	except exception.GeneralException:
     		exception_raised = True
     	self.assertTrue(exception_raised)
+
+    def test_command_called_with_too_many_arguments(self):
+    	@command
+    	@argument("arg")
+    	def foo(arg):
+    		foo.passed_arg = arg
+    	exception_raised = False
+    	try:
+    		context.exec("foo arrrrg fiz")
+    	except exception.ParserException:
+    		exception_raised = True
+    	self.assertTrue(exception_raised)
+
+    def test_command_with_multiple_arguments(self):
+    	@command
+    	@argument("arg1")
+    	@argument("arg2")
+    	def foo(arg1, arg2):
+    		foo.passed_arg = [arg1, arg2]
+
+
+    	context.exec("foo bar baz")
+    	self.assertTrue("bar" in foo.passed_arg)
+    	self.assertTrue("baz" in foo.passed_arg)
+
+    def test_command_with_description(self):
+    	@command
+    	@argument("arg", description="a simple argument")
+    	def foo(arg):
+    		foo.passed_arg = arg
+    	self.assertEqual(foo.arguments["arg"]["description"], "a simple argument")
