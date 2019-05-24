@@ -44,7 +44,7 @@ def command(_func = None, *, parent = context.root, name = None):
     else:
         return wrapper(_func, parent, name)
 
-def argument(name, description=None, flags=None):
+def argument(name, description=None, opt=None):
     def wrapper(func):
         func_spec = inspect.getfullargspec(func)
         args = func_spec.args
@@ -54,6 +54,6 @@ def argument(name, description=None, flags=None):
             func.arguments = OrderedDict()
         func.arguments[name] = {}
         func.arguments[name]["description"] = description
-        func.arguments[name]["flags"] = flags
+        func.arguments[name]["opt"] = opt
         return func
     return wrapper

@@ -84,7 +84,7 @@ class TestArgumentMethods(unittest.TestCase):
     def test_command_with_flags(self):
     	verb = False
     	@command
-    	@argument("verbose", flags=("v", "verbose"))
+    	@argument("verbose", opt="v")   
     	def foo(verbose=False):
     		nonlocal verb
     		verb = verbose

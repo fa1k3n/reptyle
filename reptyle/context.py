@@ -29,15 +29,15 @@ def __expand_flags(cmd, opt):
     short_opts = ""
     long_opts = []
     for arg in cmd.arguments:
-        short_opts += cmd.arguments[arg]["flags"][0]
-        long_opts.append(cmd.arguments[arg]["flags"][1])
+        short_opts += cmd.arguments[arg]["opt"][0]
+        long_opts.append(arg)
 
     opts, args = getopt.getopt([opt], short_opts, long_opts)
     for o, a in opts:
         for arg in cmd.arguments:
             # Pretty ugly way to compare the actual flags, remove the
             # addition of the -
-            if "-"+cmd.arguments[arg]["flags"][0] == o or "--"+cmd.arguments[arg]["flags"][1] == o:
+            if "-"+cmd.arguments[arg]["opt"] == o or "--" + arg == o:
                 return arg + "=True"
 
 def __exec_subcmd(cmd_list, cmds):
