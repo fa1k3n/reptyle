@@ -80,3 +80,17 @@ class TestArgumentMethods(unittest.TestCase):
     	def foo(arg):
     		foo.passed_arg = arg
     	self.assertEqual(foo.arguments["arg"]["description"], "a simple argument")
+
+    def test_command_with_flags(self):
+    	verb = False
+    	@command
+    	@argument("verbose", flags=("v", "verbose"))
+    	def foo(verbose=False):
+    		nonlocal verb
+    		verb = verbose
+    	context.exec("foo -v")
+    	self.assertTrue(verb, "Short flagnames does not work")
+
+    	verb = False
+    	context.exec("foo --verbose")
+    	self.assertTrue(verb, "Long flagnames does not work")

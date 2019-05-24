@@ -12,7 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from reptyle.exception import ParserException
-
+import getopt
 
 def root():
     if not hasattr(root, "childs"):
@@ -25,12 +25,32 @@ def dump_tree(root=root, lvl=0) -> str:
         tree_str += "  "*lvl + str(top) + "\n" + dump_tree(root.childs[top], lvl + 1)
     return tree_str
 
+def __expand_flags(cmd, opt):
+    short_opts = ""
+    long_opts = []
+    for arg in cmd.arguments:
+        short_opts += cmd.arguments[arg]["flags"][0]
+        long_opts.append(cmd.arguments[arg]["flags"][1])
+
+    opts, args = getopt.getopt([opt], short_opts, long_opts)
+    for o, a in opts:
+        for arg in cmd.arguments:
+            # Pretty ugly way to compare the actual flags, remove the
+            # addition of the -
+            if "-"+cmd.arguments[arg]["flags"][0] == o or "--"+cmd.arguments[arg]["flags"][1] == o:
+                return arg + "=True"
 
 def __exec_subcmd(cmd_list, cmds):
+    word = cmds[0] 
     try:
         cmd = cmd_list[cmds[0]]
-        # Last command in list or leaf command
+        # Last command in list or  leaf command
         if len(cmds) == 1 or len(cmd.childs) == 0:
+            for idx, opt in enumerate(cmds):
+                # Check if this is a flag or not
+                if opt.startswith(('-', '--')):
+                    exp = __expand_flags(cmd, opt)
+                    cmds[idx] = exp
             try: 
                 return cmd(*cmds[1:])
             except TypeError:

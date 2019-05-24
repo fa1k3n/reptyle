@@ -44,7 +44,7 @@ def command(_func = None, *, parent = context.root, name = None):
     else:
         return wrapper(_func, parent, name)
 
-def argument(name, description=None):
+def argument(name, description=None, flags=None):
     def wrapper(func):
         func_spec = inspect.getfullargspec(func)
         args = func_spec.args
@@ -52,6 +52,8 @@ def argument(name, description=None):
             raise exception.GeneralException(f"argument {name} does not exist in function {func.__name__}")
         if not hasattr(func, "arguments"):
             func.arguments = OrderedDict()
-        func.arguments[name] = {"description": description}
+        func.arguments[name] = {}
+        func.arguments[name]["description"] = description
+        func.arguments[name]["flags"] = flags
         return func
     return wrapper
