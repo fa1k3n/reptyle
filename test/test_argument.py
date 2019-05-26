@@ -94,3 +94,54 @@ class TestArgumentMethods(unittest.TestCase):
     	verb = False
     	context.exec("foo --verbose")
     	self.assertTrue(verb, "Long flagnames does not work")
+
+    def test_only_default_valued_parameters_may_have_flags(self):
+    	exception_raised = False
+    	try:
+    		@command
+    		@argument("arg", opt="a")
+    		def foo(arg):
+    			pass
+    	except exception.GeneralException:
+    		exception_raised = True
+    	self.assertTrue(exception_raised)
+
+    def test_that_opts_can_have_arguments(self):
+    	arg = None
+    	@command
+    	@argument("num", opt="n")   
+    	def foo(num=3):
+    		nonlocal arg
+    		arg = num
+    	context.exec("foo -n 4")
+    	self.assertEqual(arg, 4)
+
+    def test_that_opts_can_have_multiple_args(self):
+    	n = 2
+    	v = False
+    	@command
+    	@argument("num", opt="n")   
+    	@argument("verbose", opt="v")
+    	def foo(num=3, verbose=False):
+    		nonlocal n
+    		nonlocal v
+    		n = num
+    		v = verbose
+
+    	context.exec("foo -n 4 --verbose")
+    	self.assertTrue(v)
+    	self.assertEqual(n, 4)
+
+    def test_unknown_argument_raises_exception(self):
+    	exception_raised = False
+    	
+    	@command
+    	@argument("arg", opt="a")
+    	def foo(arg="foo"):
+    		pass
+    	try:
+    		context.exec("foo -b")
+    	except exception.ParserException:
+    		exception_raised = True
+    	self.assertTrue(exception_raised)
+

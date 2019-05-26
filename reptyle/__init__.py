@@ -48,12 +48,23 @@ def argument(name, description=None, opt=None):
     def wrapper(func):
         func_spec = inspect.getfullargspec(func)
         args = func_spec.args
+        opt_type = bool
+        # Argument is not define in function def
         if name not in args:
             raise exception.GeneralException(f"argument {name} does not exist in function {func.__name__}")
+        
+        param_spec = inspect.signature(func).parameters[name]
+
+        # Argument has option but no default value in function def
+        if opt is not None:
+            if inspect.signature(func).parameters[name].default is inspect.Parameter.empty:
+                raise exception.GeneralException(f"argument {name} has no default value and can not have a opt flag")
+
         if not hasattr(func, "arguments"):
             func.arguments = OrderedDict()
         func.arguments[name] = {}
         func.arguments[name]["description"] = description
         func.arguments[name]["opt"] = opt
+        func.arguments[name]["type"] = type(param_spec.default)
         return func
     return wrapper
