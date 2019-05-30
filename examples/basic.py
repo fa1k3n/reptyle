@@ -13,6 +13,7 @@
 
 import reptyle
 from reptyle import command
+from reptyle.builtins import quit
 
 @command
 def foo():
@@ -28,12 +29,7 @@ def bar():
 def baz():
     print("BAZ")
 
-@command
-def quit():
-    print("QUIT")
-    con.stop()
-
-
 if __name__ == '__main__':
     con = reptyle.Console()
     con.run()
+    print("Bye bye!")

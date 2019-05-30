@@ -14,6 +14,11 @@
 from reptyle.exception import ParserException
 import getopt
 
+active_con = None
+
+def quit():
+    active_con.running = False
+
 def root():
     if not hasattr(root, "childs"):
         root.childs = {}
@@ -21,6 +26,8 @@ def root():
 
 def dump_tree(root=root, lvl=0) -> str:
     tree_str = ""
+    if not hasattr(root, "childs"):
+        return tree_str
     for top in root.childs:
         tree_str += "  "*lvl + str(top) + "\n" + dump_tree(root.childs[top], lvl + 1)
     return tree_str

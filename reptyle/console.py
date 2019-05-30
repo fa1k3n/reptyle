@@ -54,7 +54,8 @@ running = False
 
 class Console:
     def __init__(self):
-        self.running = False
+        self._running = False
+        context.active_con = self
 
     def run(self):
         self.running = True
@@ -65,6 +66,17 @@ class Console:
             except exception.ParserException as e:
                 print(f"ERROR {e}")
 
+    @property
+    def running(self):
+        return self._running
+
+    @running.setter
+    def running(self, val):
+        self._running = val
+
+    def foo(self):
+        return self._foo
+    
 
     def stop(self):
         self.running = False
