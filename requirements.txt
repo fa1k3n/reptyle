@@ -1,3 +1,5 @@
 prompt_toolkit>=2
 typing==3.6.6
 nose>=1.0
+lazy_import>=0.2.2
+codecov>=2.0.15

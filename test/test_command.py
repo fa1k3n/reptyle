@@ -16,8 +16,7 @@ import unittest
 
 
 class TestCommandMethods(unittest.TestCase):
-
-    def setUp(self):
+    def tearDown(self) -> None:
         # Destroy old root
         if hasattr(context.root, "childs"):
             delattr(context.root, "childs")

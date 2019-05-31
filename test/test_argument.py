@@ -3,11 +3,11 @@ import unittest
 
 
 class TestArgumentMethods(unittest.TestCase):
-
-    def setUp(self):
+    def tearDown(self) -> None:
         # Destroy old root
         if hasattr(context.root, "childs"):
             delattr(context.root, "childs")
+
 
     def test_basic_argument(self):
     	@command

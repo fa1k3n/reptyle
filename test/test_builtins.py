@@ -1,22 +1,29 @@
 
-from reptyle import command
-from reptyle import context as con
-from reptyle.builtins import quit as q
+from reptyle import context
+import lazy_import
 import unittest
 from unittest.mock import Mock
 from reptyle.context import root
 
 
 class TestArgumentMethods(unittest.TestCase):
-	def setUp(self):
-	    # Destroy old root
-	    if hasattr(con.root, "childs"):
-	        delattr(con.root, "childs")
-
 	def test_quit(self):
-		con.quit = Mock()
+		# Need to lazyimport this module size previous testcases
+		# might have destroyed root() during their tearDown
+		q = lazy_import.lazy_module("reptyle.builtins.quit")
+		# Test command exists
+		self.assertTrue(q.quit.__name__ in root.childs)
+		self.assertEqual(q.quit, root.childs["quit"])
+
+		# Test to call it via CLI call
+		context.quit = Mock()
+		context.exec("quit")
+
+		# Test to call it as a function
+		context.quit = Mock()
 		q.quit()
-		con.quit.assert_called()
+		context.quit.assert_called()
+
 
 
 if __name__ == '__main__':	
