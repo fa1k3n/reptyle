@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from prompt_toolkit import prompt, history
+from prompt_toolkit.shortcuts import CompleteStyle
 from typing import Callable, Iterable, List, Union
 from prompt_toolkit.completion import CompleteEvent, Completer, Completion
 from prompt_toolkit.document import Document
@@ -67,7 +68,8 @@ class Console:
             try:
                 text = prompt(self._prompt_generator,
                               completer=cmd_completer,
-                              history=history.FileHistory('.reptyle.hist'))
+                              history=history.FileHistory('.reptyle.hist'),
+                              complete_style=CompleteStyle.READLINE_LIKE)
                 context.exec(text)
             except exception.ParserException as e:
                 print(f"ERROR {e}")
