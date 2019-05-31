@@ -13,8 +13,12 @@
 
 from reptyle.exception import ParserException
 import getopt
+from inspect import signature, Parameter
 
 active_con = None
+
+def console():
+    return active_con
 
 def quit():
     active_con.running = False
@@ -32,13 +36,16 @@ def dump_tree(root=root, lvl=0) -> str:
         tree_str += "  "*lvl + str(top) + "\n" + dump_tree(root.childs[top], lvl + 1)
     return tree_str
 
-def __generate_short_arg_str(args):
+def __generate_opts(args):
     short_opts = ""
+    long_opts = []
     for arg in args:
         short_opts += str(args[arg]["opt"])
+        long_opts.append(str(arg))
         if args[arg]["type"] is not bool:
+            long_opts[-1] += "="    # If not bool, append = sign
             short_opts += ":"
-    return short_opts
+    return (short_opts, long_opts)
 
 def __get_long_option(func, o):
     if o.startswith("--"):
@@ -62,13 +69,12 @@ def __expand_flags(cmd_list, cmds):
 
     fun_args = func.arguments
 
-    short_opts = __generate_short_arg_str(fun_args)
+    (short_opts, long_opts) = __generate_opts(fun_args)
     try:
-        opts, args = getopt.getopt(cmds[1:], short_opts, fun_args.keys())
+        opts, args = getopt.getopt(cmds[1:], short_opts, long_opts)
     except getopt.GetoptError as e:
         raise ParserException(e) 
     ret_named_args = {}
-
     idx = 1
     while idx < len(cmds):
         cmd = cmds[idx]
@@ -99,9 +105,8 @@ def __exec_subcmd(cmd_list, cmds):
             pos, named = __expand_flags(cmd_list, cmds)
             try: 
                 return cmd(*pos, **named)
-                #return cmd(*cmds[1:])
             except TypeError:
-                raise ParserException("too many arguments")
+                raise ParserException("arguments count missmatch")
         else:
             return __exec_subcmd(cmd.childs, cmds[1:])
     except KeyError:

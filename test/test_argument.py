@@ -54,12 +54,26 @@ class TestArgumentMethods(unittest.TestCase):
     	@command
     	@argument("arg")
     	def foo(arg):
-    		foo.passed_arg = arg
+    		pass
     	exception_raised = False
     	try:
-    		context.exec("foo arrrrg fiz")
-    	except exception.ParserException:
+    		context.exec("foo arrrrrgg fiz")
+    	except exception.ParserException as e:
     		exception_raised = True
+    		self.assertTrue("arguments count missmatch" in str(e))
+    	self.assertTrue(exception_raised)
+
+    def test_command_called_with_too_few_arguments(self):
+    	@command
+    	@argument("arg")
+    	def foo(arg):
+    		pass
+    	exception_raised = False
+    	try:
+    		context.exec("foo")
+    	except exception.ParserException as e:
+    		exception_raised = True
+    		self.assertTrue("arguments count missmatch" in str(e))
     	self.assertTrue(exception_raised)
 
     def test_command_with_multiple_arguments(self):
@@ -115,6 +129,12 @@ class TestArgumentMethods(unittest.TestCase):
     		arg = num
     	context.exec("foo -n 4")
     	self.assertEqual(arg, 4)
+
+    	context.exec("foo")
+    	self.assertEqual(arg, 3)
+
+    	context.exec("foo --num 5")
+    	self.assertEqual(arg, 5)
 
     def test_that_opts_can_have_multiple_args(self):
     	n = 2

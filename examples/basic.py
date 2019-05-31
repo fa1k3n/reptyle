@@ -11,15 +11,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import reptyle
-from reptyle import command, argument
+from reptyle import command, argument, context
 import reptyle.builtins.quit
 
 
 @command
 def foo():
-    print("FOO")
-
+    context.console().print("FOO")
 
 @command(parent=foo)
 @argument("fiz")
@@ -28,15 +26,16 @@ def bar(fiz, verbose=False):
     out = "BAR called"
     if verbose:
         out += " verbosely"
-    print(f"{out} with arg {fiz}")
+    context.console().print(f"{out} with arg {fiz}")
 
 
 @command(parent=foo)
 @argument("num", opt="n")
 def baz(num=3):
-    print(f"BAZ called with num {num}")
+    context.console().print(f"BAZ called with num {num}")
+
 
 if __name__ == '__main__':
-    con = reptyle.Console()
+    con = reptyle.Console(prompt_generator=lambda: '# ')
     con.run()
-    print("Bye bye!")
+    context.console().print("Bye bye!")

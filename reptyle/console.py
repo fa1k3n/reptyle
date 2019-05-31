@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from prompt_toolkit import prompt
+from prompt_toolkit import prompt, history
 from typing import Callable, Iterable, List, Union
 from prompt_toolkit.completion import CompleteEvent, Completer, Completion
 from prompt_toolkit.document import Document
@@ -52,20 +52,27 @@ cmd_completer = CmdCompleter([])
 
 running = False
 
+def basic_prompt():
+    return '> '
 
 class Console:
-    def __init__(self):
+    def __init__(self, prompt_generator=basic_prompt):
         self._running = False
+        self._prompt_generator = prompt_generator
         context.active_con = self
 
     def run(self):
         self.running = True
         while self.running:
             try:
-                text = prompt('> ', completer=cmd_completer)
+                text = prompt(self._prompt_generator,
+                              completer=cmd_completer,
+                              history=history.FileHistory('.reptyle.hist'))
                 context.exec(text)
             except exception.ParserException as e:
                 print(f"ERROR {e}")
+            except KeyboardInterrupt:
+                self.stop()
 
     @property
     def running(self):
@@ -75,9 +82,8 @@ class Console:
     def running(self, val):
         self._running = val
 
-    def foo(self):
-        return self._foo
-    
+    def print(self, str):
+        print(str)
 
     def stop(self):
         self.running = False
