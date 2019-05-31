@@ -12,8 +12,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import reptyle
-from reptyle import command
-from reptyle.builtins import quit
+from reptyle import command, argument
+import reptyle.builtins.quit
+
 
 @command
 def foo():
@@ -21,13 +22,19 @@ def foo():
 
 
 @command(parent=foo)
-def bar():
-    print("BAR")
+@argument("fiz")
+@argument("verbose", opt="v")
+def bar(fiz, verbose=False):
+    out = "BAR called"
+    if verbose:
+        out += " verbosely"
+    print(f"{out} with arg {fiz}")
 
 
 @command(parent=foo)
-def baz():
-    print("BAZ")
+@argument("num", opt="n")
+def baz(num=3):
+    print(f"BAZ called with num {num}")
 
 if __name__ == '__main__':
     con = reptyle.Console()

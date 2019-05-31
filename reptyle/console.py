@@ -34,7 +34,8 @@ class CmdCompleter(Completer):
 
             child_cmd = context.root.childs[text_before_cursor[0]].childs
             for cmd in text_before_cursor[1:-1]:
-                child_cmd = child_cmd[cmd].childs
+                if cmd in child_cmd and hasattr(child_cmd[cmd], "childs"):
+                    child_cmd = child_cmd[cmd].childs
             words = child_cmd.keys()
 #
 
